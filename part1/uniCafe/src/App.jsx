@@ -13,7 +13,7 @@ const Statistics = (props) => {
       <p>bad {props.bad}</p>
       <p>all {all}</p>
       <p>average {average}</p>
-      <p>positive {positive}</p>
+      <p>positive {positive} %</p>
     </>
   );
 };
