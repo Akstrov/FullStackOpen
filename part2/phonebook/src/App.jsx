@@ -1,5 +1,54 @@
 import { useState } from "react";
 
+const Filter = ({ handler }) => {
+  return (
+    <div>
+      filter shown with: <input onChange={handler} />
+    </div>
+  );
+};
+const PersonForm = ({
+  newName,
+  newNumber,
+  submitHandler,
+  newNameHandler,
+  newNumberHandler,
+}) => {
+  return (
+    <>
+      <form onSubmit={submitHandler}>
+        <div>
+          name: <input value={newName} onChange={newNameHandler} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={newNumberHandler} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </>
+  );
+};
+
+const Persons = ({ shownPersons }) => {
+  return (
+    <>
+      {shownPersons.map((person) => (
+        <PersonDetails key={person.name} person={person} />
+      ))}
+    </>
+  );
+};
+
+const PersonDetails = ({ person }) => {
+  return (
+    <p>
+      {person.name} {person.number}
+    </p>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456" },
@@ -13,12 +62,15 @@ const App = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+    console.log(newName, newNumber);
     const exist = persons.find((person) => person.name === newName);
     exist
       ? alert(`${newName} is already added to phonebook`)
-      : setPersons(persons.concat({ name: newName, number: newNumber }));
+      : setPersons(persons.concat({ name: newName, number: newNumber })),
+      setShownPersons(persons.concat({ name: newName, number: newNumber }));
     setNewName("");
     setNewNumber("");
+    console.log("after ", shownPersons);
   };
   const newNameHandler = (event) => {
     setNewName(event.target.value);
@@ -38,27 +90,18 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with: <input onChange={filterHandler} />
-      </div>
+      <Filter handler={filterHandler} />
       <h2>Add a new</h2>
-      <form onSubmit={submitHandler}>
-        <div>
-          name: <input value={newName} onChange={newNameHandler} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={newNumberHandler} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        newName={newName}
+        newNumber={newNumber}
+        submitHandler={submitHandler}
+        newNameHandler={newNameHandler}
+        newNumberHandler={newNumberHandler}
+      />
+
       <h2>Numbers</h2>
-      {shownPersons.map((person) => (
-        <p key={person.name}>
-          {person.name} {person.number}
-        </p>
-      ))}
+      <Persons shownPersons={shownPersons} />
     </div>
   );
 };
