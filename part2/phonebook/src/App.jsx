@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
 import personService from "./services/persons";
 
-const Notification = ({ message }) => {
+const SuccessNotification = ({ message }) => {
   if (message === null) {
     return null;
   }
 
   return <div className="success">{message}</div>;
+};
+
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="error">{message}</div>;
 };
 
 const Filter = ({ handler }) => {
@@ -78,6 +86,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => setPersons(initialPersons));
@@ -105,6 +114,15 @@ const App = () => {
                   setSuccessMessage(null);
                 }, 5000);
               });
+            })
+            .catch((error) => {
+              setErrorMessage(
+                `Information of ${exist.name} has already been removed from server`
+              );
+              setPersons(persons.filter((person) => person.id !== exist.id));
+              setTimeout(() => {
+                setErrorMessage(null);
+              }, 5000);
             })
         : null
       : personService
@@ -146,7 +164,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <SuccessNotification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter handler={filterHandler} />
       <h2>Add a new</h2>
       <PersonForm
