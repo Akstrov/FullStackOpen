@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
+import personService from "./services/persons";
 
 const Filter = ({ handler }) => {
   return (
@@ -36,9 +37,9 @@ const Persons = ({ persons }) => {
   return (
     <>
       {persons.map((person) => (
-        <div key={person.id}>
+        <PersonDetails key={person.id} person={person}>
           {person.name} {person.number}
-        </div>
+        </PersonDetails>
       ))}
     </>
   );
@@ -56,17 +57,10 @@ const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const hook = () => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-    });
-  };
-  const createPerson = (personObject) => {
-    const request = axios.post("http://localhost:3001/persons", personObject);
-    return request.then((response) => response.data);
-  };
 
-  useEffect(hook, []);
+  useEffect(() => {
+    personService.getAll().then((initialPersons) => setPersons(initialPersons));
+  }, []);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -74,9 +68,14 @@ const App = () => {
     const exist = persons.find((person) => person.name === newName);
     exist
       ? alert(`${newName} is already added to phonebook`)
-      : createPerson({ name: newName, number: newNumber }).then((newPerson) => {
-          setPersons(persons.concat(newPerson));
-        });
+      : personService
+          .create({
+            name: newName,
+            number: newNumber,
+          })
+          .then((returnedPerson) => {
+            setPersons(persons.concat(returnedPerson));
+          });
     setNewName("");
     setNewNumber("");
   };
