@@ -79,7 +79,19 @@ const App = () => {
     console.log(newName, newNumber);
     const exist = persons.find((person) => person.name === newName);
     exist
-      ? alert(`${newName} is already added to phonebook`)
+      ? window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+        ? personService
+            .update(exist.id, { name: newName, number: newNumber })
+            .then((returnedPerson) => {
+              setPersons(
+                persons.map((person) =>
+                  person.id !== exist.id ? person : returnedPerson
+                )
+              );
+            })
+        : null
       : personService
           .create({
             name: newName,
