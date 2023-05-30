@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import personService from "./services/persons";
 
@@ -33,11 +32,15 @@ const PersonForm = ({
   );
 };
 
-const Persons = ({ persons }) => {
+const Persons = ({ persons, removePerson }) => {
   return (
     <>
       {persons.map((person) => (
-        <PersonDetails key={person.id} person={person}>
+        <PersonDetails
+          key={person.id}
+          person={person}
+          removePerson={removePerson}
+        >
           {person.name} {person.number}
         </PersonDetails>
       ))}
@@ -45,11 +48,20 @@ const Persons = ({ persons }) => {
   );
 };
 
-const PersonDetails = ({ person }) => {
+const PersonDetails = ({ person, removePerson }) => {
   return (
-    <p>
+    <div>
       {person.name} {person.number}
-    </p>
+      <button
+        onClick={() =>
+          window.confirm(`delete ${person.name} from phonebook?`)
+            ? removePerson(person.id)
+            : null
+        }
+      >
+        delete
+      </button>
+    </div>
   );
 };
 
@@ -79,6 +91,12 @@ const App = () => {
     setNewName("");
     setNewNumber("");
   };
+
+  const removePerson = (id) => {
+    personService.remove(id).then(() => {
+      setPersons(persons.filter((person) => person.id !== id));
+    });
+  };
   const newNameHandler = (event) => {
     setNewName(event.target.value);
   };
@@ -88,10 +106,6 @@ const App = () => {
   };
 
   const filterHandler = (event) => {
-    if (event.target.value === "") {
-      hook();
-      return;
-    }
     const filteredPersons = persons.filter((person) =>
       person.name.toLowerCase().includes(event.target.value.toLowerCase())
     );
@@ -112,7 +126,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} removePerson={removePerson} />
     </div>
   );
 };

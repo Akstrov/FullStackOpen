@@ -22,18 +22,8 @@
     },
     {
       "name": "Youssef Elhardouzi",
-      "number": "123456",
-      "id": 5
-    },
-    {
-      "name": "test",
       "number": "123",
-      "id": 6
-    },
-    {
-      "name": "test2",
-      "number": "456",
-      "id": 7
+      "id": 5
     }
   ]
 }
