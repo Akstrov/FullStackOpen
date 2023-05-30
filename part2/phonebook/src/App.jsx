@@ -61,6 +61,10 @@ const App = () => {
       setPersons(response.data);
     });
   };
+  const createPerson = (personObject) => {
+    const request = axios.post("http://localhost:3001/persons", personObject);
+    return request.then((response) => response.data);
+  };
 
   useEffect(hook, []);
 
@@ -70,8 +74,10 @@ const App = () => {
     const exist = persons.find((person) => person.name === newName);
     exist
       ? alert(`${newName} is already added to phonebook`)
-      : setPersons(persons.concat({ name: newName, number: newNumber })),
-      setNewName("");
+      : createPerson({ name: newName, number: newNumber }).then((newPerson) => {
+          setPersons(persons.concat(newPerson));
+        });
+    setNewName("");
     setNewNumber("");
   };
   const newNameHandler = (event) => {
