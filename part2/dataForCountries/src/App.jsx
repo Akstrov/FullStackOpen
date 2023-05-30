@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 function App() {
-  const [country, setCountries] = useState("");
+  const [country, setCountry] = useState("");
   const [allCountries, setAllCountries] = useState([]);
   const [message, setMessage] = useState("");
 
@@ -21,14 +21,37 @@ function App() {
         console.log(error);
       });
   };
+  const countryView = (country) => {
+    const name = country.name.common;
+    const capital = country.capital[0];
+    const area = country.area;
+    const languages = country.languages;
+    const flag = country.flags.svg;
+    console.log(name, capital, area, languages, flag);
+    setMessage(
+      <>
+        <h1>{name}</h1>
+        <p>capital {capital}</p>
+        <p>area {area}</p>
+        <h2>Languages</h2>
+        <ul>
+          {Object.values(languages).map((language) => (
+            <li key={language}>{language} </li>
+          ))}
+        </ul>
+        <img src={flag} alt="flag" width="200px" />
+      </>
+    );
+  };
 
   const handleSearch = (e) => {
-    setCountries(e.target.value);
+    setCountry(e.target.value);
     const searchCountries = allCountries.filter((country) => {
       return country.name.common
         .toLowerCase()
         .includes(e.target.value.toLowerCase());
     });
+
     const searchCount = searchCountries.length;
     console.log(searchCount);
     if (searchCount > 10) {
@@ -36,37 +59,33 @@ function App() {
     } else if (searchCount <= 10 && searchCount > 1) {
       setMessage(
         searchCountries.map((country) => (
-          <p key={country.name.common}>{country.name.common}</p>
+          <p key={country.name.common}>
+            {country.name.common}{" "}
+            <button
+              onClick={() => {
+                countryView(country);
+                setCountry(country.name.common);
+              }}
+            >
+              show
+            </button>
+          </p>
         ))
       );
     } else if (searchCount === 1) {
-      const name = searchCountries[0].name.common;
-      const capital = searchCountries[0].capital[0];
-      const area = searchCountries[0].area;
-      const languages = searchCountries[0].languages;
-      const flag = searchCountries[0].flags.svg;
-      console.log(name, capital, area, languages, flag);
-      setMessage(
-        <>
-          <h1>{name}</h1>
-          <p>capital {capital}</p>
-          <p>area {area}</p>
-          <h2>Languages</h2>
-          <ul>
-            {Object.values(languages).map((language) => (
-              <li key={language}>{language} </li>
-            ))}
-          </ul>
-          <img src={flag} alt="flag" width="200px" />
-        </>
-      );
+      countryView(searchCountries[0]);
     }
   };
 
   return (
     <>
       <label>find countries</label>
-      <input type="text" value={country} onChange={handleSearch} />
+      <input
+        name="country"
+        type="text"
+        value={country}
+        onChange={handleSearch}
+      />
       <div>{!message ? null : message}</div>
     </>
   );
